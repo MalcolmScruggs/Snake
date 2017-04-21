@@ -32,7 +32,13 @@ public class Snake {
     }
   }
   
-  // moves snake based on ticks passing
+
+/**
+ * Moves the snake according to one tick of time having passed.
+ * Movement is determine by the local value this.direction.
+ * 
+ * @throws throws RuntimeException if direction is not one the expected values
+ */
   void moveSnake() {
     int oldx = x;
     int oldy = y;
@@ -52,7 +58,6 @@ public class Snake {
       throw new RuntimeException("direction is illegal");
     }
     
-    //TODO update tail
     if (tail.size() > 0) {
       tail.remove(tail.size() - 1);
       tail.add(0, new BodyCell(oldx, oldy));
@@ -60,7 +65,12 @@ public class Snake {
     
   }
 
-  // adjusts all snake behavior based on a tick passing
+  /**
+   * Updates the snake based of one tick of time having passed.
+   * This consists of:
+   *  - adding any eaten foods onto the tail of the snake if at tail
+   *  - moving the snake
+   */
   public void handleOnTick() {
     
     // handles adding on cells that have been eaten
@@ -86,6 +96,11 @@ public class Snake {
 
   }
   
+  /**
+   * Takes the body cell and stores it until it is appropriate to add it to
+   * the snake
+   * @param bc - the BodyCell to be added onto the snake
+   */
   public void addBodyCell(BodyCell bc) {
     this.toAdd.add(bc);
   }
@@ -96,5 +111,13 @@ public class Snake {
   
   public void setY(int y) {
     this.y = y;
+  }
+  
+  public int getX() {
+    return this.x;
+  }
+  
+  public int getY() {
+    return this.y;
   }
 }
