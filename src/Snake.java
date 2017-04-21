@@ -15,9 +15,17 @@ public class Snake {
     this.toAdd = new ArrayList<BodyCell>();
   }
 
-  // responds the key input from the player
-  void moveSnake(String ke) {
-    // checks that player doesn't double back    
+  /**
+   * Updates the direction of this snake according to a string input
+   * Only responds to the following strings:
+   * - "up"
+   * - "down"
+   * - "left"
+   * - "right"
+   * 
+   * @param ke - the string that determine the change of direction
+   */
+  void moveSnake(String ke) { 
     if (ke.equals("up")) {
       this.direction = "up";
     }
