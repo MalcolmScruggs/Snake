@@ -9,8 +9,8 @@ import javalib.worldimages.TextImage;
 import javalib.worldimages.WorldImage;
 
 public class SnakeWorld extends World{
-  public static final int WIDTH = 50;
-  public static final int HEIGHT = 50;
+  public static final int WIDTH = 25;
+  public static final int HEIGHT = 25;
   public static final int CELL_SIZE = 15;
   public static final double SPEED = 0.1;
   private static final int FONT_SIZE = 20;
@@ -28,7 +28,7 @@ public class SnakeWorld extends World{
   @Override
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
-    if (gameActive) {
+    if (gameActive) { // render the snake
       for (Food f : loFood) {
         WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLUE);
         scene.placeImageXY(img, f.x * CELL_SIZE, f.y * CELL_SIZE);
@@ -42,10 +42,12 @@ public class SnakeWorld extends World{
         scene.placeImageXY(img, bc.x * CELL_SIZE, bc.y * CELL_SIZE);
       }
     }
-    else {
+    else { // render the end game screen
       WorldImage img = new TextImage("press R to reset", FONT_SIZE, Color.RED);
       scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
     }
+    
+    // Display the score
     WorldImage img = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
     scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT + HEIGHT / 5 * CELL_SIZE);
 
@@ -105,7 +107,21 @@ public class SnakeWorld extends World{
           || snek.y > HEIGHT - 1 || snek.y < 0) {
         this.gameActive = false;
       }
-
+    }
+    else {
+      if (snek.x > WIDTH - 1) {
+        snek.setX(0);
+      }
+      else if (snek.x < 0) {
+        snek.setX(WIDTH - 1);
+      }
+      else if (snek.y > HEIGHT -1) {
+        snek.setY(0);
+      }
+      else if (snek.y < 0) {
+        snek.setY(HEIGHT - 1);
+      }
     }
   }
+  
 }

@@ -1,13 +1,16 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-import javalib.worldimages.WorldImage;
-
 public class Food {
   int x;
   int y;
   
-  //convenience constructor 
+  /**
+   * Convience contrstructor to create a food at a given X and Y integers
+   * 
+   * @param x - the integer used for the X placement 
+   * @param y - the integer used for the Y placement
+   */
   Food(int x, int y) {
     this.x = x;
     this.y = y;
@@ -18,6 +21,11 @@ public class Food {
   private Food() {
   }
   
+  /**
+   * Creates a Food object on a cell not currently occupied by the given snake
+   * 
+   * @param s - the snake which the food will not be placed on top of
+   */
   Food(Snake s) {
     Random rand = new Random();
     ArrayList<BodyCell> invalidPlacements = s.tail;
@@ -39,10 +47,5 @@ public class Food {
     }
     this.x = foodX;
     this.y = foodY;
-  }
-  
-  WorldImage makeImage() {
-    //TODO
-    return null; 
   }
 }

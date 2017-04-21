@@ -89,4 +89,12 @@ public class Snake {
   public void addBodyCell(BodyCell bc) {
     this.toAdd.add(bc);
   }
+  
+  public void setX(int x) {
+    this.x = x;
+  }
+  
+  public void setY(int y) {
+    this.y = y;
+  }
 }
