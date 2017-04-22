@@ -29,7 +29,7 @@ public class Food {
   Food(Snake s) {
     Random rand = new Random();
     ArrayList<BodyCell> invalidPlacements = s.tail;
-    invalidPlacements.add(new BodyCell(s.x, s.y));
+    invalidPlacements.add(new BodyCell(s.getX(), s.getY()));
     
     
     int foodX = rand.nextInt(SnakeWorld.WIDTH);

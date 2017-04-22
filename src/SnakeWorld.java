@@ -27,7 +27,7 @@ public class SnakeWorld extends World{
     this.resetGame();
   }
 
-  
+
   /**
    * Generates the image that will be displayed to the user
    */
@@ -37,13 +37,13 @@ public class SnakeWorld extends World{
       return makeStartScene();
     }
     else if (!gameActive) {
-      
+      return makeDeathScene();
     }
     else {
       return makeGameScene();
     }
   }
-  
+
   /**
    * Generates the game screen for when the game screen when the game is active
    * @return the screen to be shown to the user
@@ -57,40 +57,58 @@ public class SnakeWorld extends World{
       }
 
       WorldImage snekHead = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
-      scene.placeImageXY(snekHead, snek.x * CELL_SIZE, snek.y * CELL_SIZE);
+      scene.placeImageXY(snekHead, snek.getX() * CELL_SIZE, snek.getY() * CELL_SIZE);
 
       for (BodyCell bc : snek.tail) {
         WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
         scene.placeImageXY(img, bc.x * CELL_SIZE, bc.y * CELL_SIZE);
       }
     }
-    else { // render the end game screen
-      WorldImage img = new TextImage("press any key to play again", FONT_SIZE, Color.BLACK);
-      scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
-      WorldImage hiScoreImg = new TextImage("High Score: " + hiScore, FONT_SIZE, Color.BLACK);
-      scene.placeImageXY(hiScoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE + CELL_SIZE * 2);
-    }
-    
+
     // Display the score
     WorldImage scoreImg = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
     scene.placeImageXY(scoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
 
     return scene;
   }
-  
-  private WorldScene makeStartScene() {
+
+  /**
+   * generate the scene to be displayed after the snake has collided and died
+   * @return - the screen to be show the user
+   */
+  private WorldScene makeDeathScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
     
+    WorldImage img = new TextImage("press any key to play again", FONT_SIZE, Color.BLACK);
+    scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+    
+    WorldImage hiScoreImg = new TextImage("High Score: " + hiScore, FONT_SIZE, Color.BLACK);
+    scene.placeImageXY(hiScoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE + CELL_SIZE * 2);
+
+    // Display the score
+    WorldImage scoreImg = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
+    scene.placeImageXY(scoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
+    
+    return scene;
+  }
+
+  /**
+   * Generates the starts screen
+   * @return the screen to be shown to the user
+   */
+  private WorldScene makeStartScene() {
+    WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+
     //place Snake title
     WorldImage snakeImg = new TextImage("SNAKE", FONT_SIZE * 2, Color.BLACK);
     scene.placeImageXY(snakeImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
 
     WorldImage controlsText = new TextImage("Press any key to start", FONT_SIZE, Color.BLACK);
     scene.placeImageXY(controlsText, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
-    
+
     return scene;
   }
-  
+
   /**
    * Handles the actions that should occur to the game based on a tick passing
    */
@@ -139,7 +157,7 @@ public class SnakeWorld extends World{
    */
   public void snakeCollision() {
     for (BodyCell bc : snek.tail) {
-      if (bc.x == snek.x && bc.y == snek.y) {
+      if (bc.x == snek.getX() && bc.y == snek.getY()) {
         this.gameActive = false;
         this.hiScore = Math.max(score, hiScore);
         break;
@@ -154,7 +172,7 @@ public class SnakeWorld extends World{
   public void foodCollision() {
     for (int i = 0; i < loFood.size(); i++) {
       Food f = loFood.get(i);
-      if (f.x == snek.x && f.y == snek.y) {
+      if (f.x == snek.getX() && f.y == snek.getY()) {
         loFood.remove(i);
         loFood.add(new Food(this.snek));
         snek.addBodyCell(new BodyCell(f.x, f.y));
@@ -169,26 +187,26 @@ public class SnakeWorld extends World{
    */
   public void handleBoundries() {
     if (WALLS_KILL) {
-      if (snek.x > WIDTH - 1 || snek.x < 0
-          || snek.y > HEIGHT - 1 || snek.y < 0) {
+      if (snek.getX() > WIDTH - 1 || snek.getX() < 0
+          || snek.getY() > HEIGHT - 1 || snek.getY() < 0) {
         this.gameActive = false;
         this.hiScore = Math.max(score, hiScore);
       }
     }
     else {
-      if (snek.x > WIDTH - 1) {
+      if (snek.getX() > WIDTH - 1) {
         snek.setX(0);
       }
-      else if (snek.x < 0) {
+      else if (snek.getX() < 0) {
         snek.setX(WIDTH - 1);
       }
-      else if (snek.y > HEIGHT -1) {
+      else if (snek.getY() > HEIGHT -1) {
         snek.setY(0);
       }
-      else if (snek.y < 0) {
+      else if (snek.getY() < 0) {
         snek.setY(HEIGHT - 1);
       }
     }
   }
-  
+
 }

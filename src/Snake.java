@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 
 public class Snake {
-  int x;
-  int y;
+  private int x;
+  private int y;
   String direction;
   ArrayList<BodyCell> tail;
   ArrayList<BodyCell> toAdd;
