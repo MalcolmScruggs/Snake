@@ -25,6 +25,10 @@ public class SnakeWorld extends World{
     this.resetGame();
   }
 
+  
+  /**
+   * Generates the image that will be displayed to the user
+   */
   @Override
   public WorldScene makeScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
@@ -54,6 +58,9 @@ public class SnakeWorld extends World{
     return scene;
   }
 
+  /**
+   * Handles the actions that should occur to the game based on a tick passing
+   */
   @Override
   public void onTick() {
     snek.handleOnTick();
@@ -63,6 +70,9 @@ public class SnakeWorld extends World{
     this.score = snek.tail.size();
   }
 
+  /**
+   * Responds to user input from the keyboard
+   */
   @Override
   public void onKeyEvent(String ke) {
     if (ke.equals("r")) {
@@ -73,6 +83,9 @@ public class SnakeWorld extends World{
     }
   }
 
+  /**
+   * Resets the base values of the game to start a new round of snake
+   */
   public void resetGame() {
     this.snek = new Snake(WIDTH / 2, HEIGHT / 2);
     this.gameActive = true;
@@ -81,6 +94,10 @@ public class SnakeWorld extends World{
     this.loFood.add(new Food(snek));
   }
 
+  /**
+   * Checks if the snake has hit itself.
+   * Sets gameAvtice to false if it has. Does nothing otherwise
+   */
   public void snakeCollision() {
     for (BodyCell bc : snek.tail) {
       if (bc.x == snek.x && bc.y == snek.y) {
@@ -90,6 +107,10 @@ public class SnakeWorld extends World{
     }
   }
 
+  /**
+   * Checks if the snake has hit food.
+   * If it has creates another food and adds a BodyCell to the snake
+   */
   public void foodCollision() {
     for (int i = 0; i < loFood.size(); i++) {
       Food f = loFood.get(i);
@@ -101,6 +122,11 @@ public class SnakeWorld extends World{
     }
   }
 
+  /**
+   * Handle the behavior of the snake depending on the boundary settings.
+   * If WALLS_KILL then hitting a wall ends the game
+   * Otherwise the snake moves from one edge of the screen to the opposite.
+   */
   public void handleBoundries() {
     if (WALLS_KILL) {
       if (snek.x > WIDTH - 1 || snek.x < 0
