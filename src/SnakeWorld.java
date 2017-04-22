@@ -53,7 +53,7 @@ public class SnakeWorld extends World{
     if (gameActive) { // render the snake
       for (Food f : loFood) {
         WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLUE);
-        scene.placeImageXY(img, f.x * CELL_SIZE, f.y * CELL_SIZE);
+        scene.placeImageXY(img, f.getX() * CELL_SIZE, f.getY() * CELL_SIZE);
       }
 
       WorldImage snekHead = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
@@ -61,7 +61,7 @@ public class SnakeWorld extends World{
 
       for (BodyCell bc : snek.tail) {
         WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
-        scene.placeImageXY(img, bc.x * CELL_SIZE, bc.y * CELL_SIZE);
+        scene.placeImageXY(img, bc.getX() * CELL_SIZE, bc.getY() * CELL_SIZE);
       }
     }
 
@@ -157,7 +157,7 @@ public class SnakeWorld extends World{
    */
   public void snakeCollision() {
     for (BodyCell bc : snek.tail) {
-      if (bc.x == snek.getX() && bc.y == snek.getY()) {
+      if (bc.getX() == snek.getX() && bc.getY() == snek.getY()) {
         this.gameActive = false;
         this.hiScore = Math.max(score, hiScore);
         break;
@@ -172,10 +172,10 @@ public class SnakeWorld extends World{
   public void foodCollision() {
     for (int i = 0; i < loFood.size(); i++) {
       Food f = loFood.get(i);
-      if (f.x == snek.getX() && f.y == snek.getY()) {
+      if (f.getX() == snek.getX() && f.getY() == snek.getY()) {
         loFood.remove(i);
         loFood.add(new Food(this.snek));
-        snek.addBodyCell(new BodyCell(f.x, f.y));
+        snek.addBodyCell(new BodyCell(f.getX(), f.getY()));
       }
     }
   }

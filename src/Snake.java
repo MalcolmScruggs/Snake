@@ -3,13 +3,13 @@ import java.util.ArrayList;
 public class Snake {
   private int x;
   private int y;
-  String direction;
+  private String direction;
   ArrayList<BodyCell> tail;
   ArrayList<BodyCell> toAdd;
   
   Snake(int x, int y) {
-    this.x = x;
-    this.y = y;
+    this.setX(x);
+    this.setX(y);
     this.direction = "right";
     this.tail = new ArrayList<BodyCell>();
     this.toAdd = new ArrayList<BodyCell>();
@@ -85,11 +85,11 @@ public class Snake {
     for (int i = 0; i < toAdd.size(); i++) {
       BodyCell bcAdd = toAdd.get(i);
       boolean validAddition = true;
-      if (bcAdd.x == this.x && bcAdd.y == this.y) {
+      if (bcAdd.getX() == this.x && bcAdd.getY() == this.y) {
         validAddition = false;
       }
       for (BodyCell bcTail : tail) {
-        if (bcAdd.x == bcTail.x && bcAdd.x == bcTail.y) {
+        if (bcAdd.getX() == bcTail.getX() && bcAdd.getX() == bcTail.getY()) {
           validAddition = false;
         }
       }
