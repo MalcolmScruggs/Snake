@@ -19,7 +19,9 @@ public class SnakeWorld extends World{
   Snake snek;
   ArrayList<Food> loFood;
   boolean gameActive;
+  boolean startScreenActive = true;
   int score;
+  int hiScore;
 
   SnakeWorld() {
     this.resetGame();
@@ -31,6 +33,22 @@ public class SnakeWorld extends World{
    */
   @Override
   public WorldScene makeScene() {
+    if (startScreenActive) {
+      return makeStartScene();
+    }
+    else if (!gameActive) {
+      
+    }
+    else {
+      return makeGameScene();
+    }
+  }
+  
+  /**
+   * Generates the game screen for when the game screen when the game is active
+   * @return the screen to be shown to the user
+   */
+  private WorldScene makeGameScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
     if (gameActive) { // render the snake
       for (Food f : loFood) {
@@ -47,17 +65,32 @@ public class SnakeWorld extends World{
       }
     }
     else { // render the end game screen
-      WorldImage img = new TextImage("press R to reset", FONT_SIZE, Color.RED);
+      WorldImage img = new TextImage("press any key to play again", FONT_SIZE, Color.BLACK);
       scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+      WorldImage hiScoreImg = new TextImage("High Score: " + hiScore, FONT_SIZE, Color.BLACK);
+      scene.placeImageXY(hiScoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE + CELL_SIZE * 2);
     }
     
     // Display the score
-    WorldImage img = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
-    scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT + HEIGHT / 5 * CELL_SIZE);
+    WorldImage scoreImg = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
+    scene.placeImageXY(scoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
 
     return scene;
   }
+  
+  private WorldScene makeStartScene() {
+    WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+    
+    //place Snake title
+    WorldImage snakeImg = new TextImage("SNAKE", FONT_SIZE * 2, Color.BLACK);
+    scene.placeImageXY(snakeImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
 
+    WorldImage controlsText = new TextImage("Press any key to start", FONT_SIZE, Color.BLACK);
+    scene.placeImageXY(controlsText, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+    
+    return scene;
+  }
+  
   /**
    * Handles the actions that should occur to the game based on a tick passing
    */
@@ -75,7 +108,13 @@ public class SnakeWorld extends World{
    */
   @Override
   public void onKeyEvent(String ke) {
-    if (ke.equals("r")) {
+    if (startScreenActive) {
+      this.startScreenActive = false;
+    }
+    else if (!gameActive) {
+      resetGame();
+    }
+    else if (ke.equals("r")) {
       resetGame();
     }
     else {
@@ -102,6 +141,7 @@ public class SnakeWorld extends World{
     for (BodyCell bc : snek.tail) {
       if (bc.x == snek.x && bc.y == snek.y) {
         this.gameActive = false;
+        this.hiScore = Math.max(score, hiScore);
         break;
       }
     }
@@ -132,6 +172,7 @@ public class SnakeWorld extends World{
       if (snek.x > WIDTH - 1 || snek.x < 0
           || snek.y > HEIGHT - 1 || snek.y < 0) {
         this.gameActive = false;
+        this.hiScore = Math.max(score, hiScore);
       }
     }
     else {
