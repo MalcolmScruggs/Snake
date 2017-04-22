@@ -193,7 +193,8 @@ public class SnakeWorld extends World{
           if ((bc.getX() == snek2.getX() && bc.getY() == snek2.getY())
               || (bc.getX() == snek.getX() && bc.getY() == snek.getY())
               || (bc2.getX() == snek2.getX() && bc2.getY() == snek2.getY())
-              || (bc2.getX() == snek.getX() && bc2.getY() == snek.getY())) {
+              || (bc2.getX() == snek.getX() && bc2.getY() == snek.getY())
+              || (snek.getX() == snek2.getX() && snek.getY() == snek2.getY())) {
             this.gameActive = false;
             this.hiScore = Math.max(score, hiScore);
             break;
