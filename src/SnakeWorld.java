@@ -9,17 +9,21 @@ import javalib.worldimages.TextImage;
 import javalib.worldimages.WorldImage;
 
 public class SnakeWorld extends World{
-  public static final int WIDTH = 25;
-  public static final int HEIGHT = 25;
-  public static final int CELL_SIZE = 15;
-  public static final double SPEED = 0.1;
+  public static final int WIDTH = 35;
+  public static final int HEIGHT = 35;
+  public static final int CELL_SIZE = 20;
+  public static final double SPEED = 0.1; // lower is faster
   private static final int FONT_SIZE = 20;
-  private static final boolean WALLS_KILL = true;
+  private static final boolean WALLS_KILL = false;
+  private static final WorldImage background = new RectangleImage(WIDTH * CELL_SIZE,
+      HEIGHT * CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
 
   Snake snek;
+  Snake snek2;
   ArrayList<Food> loFood;
   boolean gameActive;
   boolean startScreenActive = true;
+  boolean isTwoPlayer = true;
   int score;
   int hiScore;
 
@@ -49,19 +53,31 @@ public class SnakeWorld extends World{
    * @return the screen to be shown to the user
    */
   private WorldScene makeGameScene() {
-    WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+    WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, WIDTH * CELL_SIZE);
+    scene.placeImageXY(background, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+
     if (gameActive) { // render the snake
       for (Food f : loFood) {
         WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLUE);
         scene.placeImageXY(img, f.getX() * CELL_SIZE, f.getY() * CELL_SIZE);
       }
 
-      WorldImage snekHead = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
+      WorldImage snekHead = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.WHITE);
       scene.placeImageXY(snekHead, snek.getX() * CELL_SIZE, snek.getY() * CELL_SIZE);
 
       for (BodyCell bc : snek.tail) {
-        WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.BLACK);
+        WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.WHITE);
         scene.placeImageXY(img, bc.getX() * CELL_SIZE, bc.getY() * CELL_SIZE);
+      }
+
+      if (isTwoPlayer) {
+        WorldImage snekHead2 = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.MAGENTA);
+        scene.placeImageXY(snekHead2, snek2.getX() * CELL_SIZE, snek2.getY() * CELL_SIZE);
+
+        for (BodyCell bc : snek2.tail) {
+          WorldImage img = new RectangleImage(CELL_SIZE, CELL_SIZE, OutlineMode.SOLID, Color.MAGENTA);
+          scene.placeImageXY(img, bc.getX() * CELL_SIZE, bc.getY() * CELL_SIZE);
+        }
       }
     }
 
@@ -78,17 +94,18 @@ public class SnakeWorld extends World{
    */
   private WorldScene makeDeathScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
-    
-    WorldImage img = new TextImage("press any key to play again", FONT_SIZE, Color.BLACK);
+    scene.placeImageXY(background, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
+
+    WorldImage img = new TextImage("press any key to play again", FONT_SIZE, Color.WHITE);
     scene.placeImageXY(img, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
-    
-    WorldImage hiScoreImg = new TextImage("High Score: " + hiScore, FONT_SIZE, Color.BLACK);
+
+    WorldImage hiScoreImg = new TextImage("High Score: " + hiScore, FONT_SIZE, Color.WHITE);
     scene.placeImageXY(hiScoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE + CELL_SIZE * 2);
 
     // Display the score
     WorldImage scoreImg = new TextImage("Score: " + score, FONT_SIZE, Color.RED);
     scene.placeImageXY(scoreImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
-    
+
     return scene;
   }
 
@@ -98,12 +115,13 @@ public class SnakeWorld extends World{
    */
   private WorldScene makeStartScene() {
     WorldScene scene = new WorldScene(WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE);
+    scene.placeImageXY(background, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
 
     //place Snake title
-    WorldImage snakeImg = new TextImage("SNAKE", FONT_SIZE * 2, Color.BLACK);
+    WorldImage snakeImg = new TextImage("SNAKE", FONT_SIZE * 2, Color.WHITE);
     scene.placeImageXY(snakeImg, WIDTH / 2 * CELL_SIZE, HEIGHT / 5 * CELL_SIZE);
 
-    WorldImage controlsText = new TextImage("Press any key to start", FONT_SIZE, Color.BLACK);
+    WorldImage controlsText = new TextImage("Press any key to start", FONT_SIZE, Color.WHITE);
     scene.placeImageXY(controlsText, WIDTH / 2 * CELL_SIZE, HEIGHT / 2 * CELL_SIZE);
 
     return scene;
@@ -115,10 +133,16 @@ public class SnakeWorld extends World{
   @Override
   public void onTick() {
     snek.handleOnTick();
+    if (isTwoPlayer) {
+      snek2.handleOnTick();
+    }
     this.snakeCollision();
     this.foodCollision();
     this.handleBoundries();
     this.score = snek.tail.size();
+    if (isTwoPlayer) {
+      this.score += snek2.tail.size();
+    }
   }
 
   /**
@@ -137,6 +161,9 @@ public class SnakeWorld extends World{
     }
     else {
       snek.moveSnake(ke);
+      if (isTwoPlayer) {
+        snek2.moveSnake(ke);
+      }
     }
   }
 
@@ -144,11 +171,15 @@ public class SnakeWorld extends World{
    * Resets the base values of the game to start a new round of snake
    */
   public void resetGame() {
-    this.snek = new Snake(WIDTH / 2, HEIGHT / 2);
+    this.snek = new Snake(WIDTH / 2, HEIGHT / 2, false);
     this.gameActive = true;
     this.score = 0;
     this.loFood = new ArrayList<Food>();
     this.loFood.add(new Food(snek));
+
+    if (isTwoPlayer) {
+      this.snek2 = new Snake(WIDTH / 2 + 1, HEIGHT / 2 + 1, true);
+    }
   }
 
   /**
@@ -156,11 +187,27 @@ public class SnakeWorld extends World{
    * Sets gameAvtice to false if it has. Does nothing otherwise
    */
   public void snakeCollision() {
-    for (BodyCell bc : snek.tail) {
-      if (bc.getX() == snek.getX() && bc.getY() == snek.getY()) {
-        this.gameActive = false;
-        this.hiScore = Math.max(score, hiScore);
-        break;
+    if (isTwoPlayer) {
+      for (BodyCell bc : snek2.tail) {
+        for (BodyCell bc2 : snek.tail) {
+          if ((bc.getX() == snek2.getX() && bc.getY() == snek2.getY())
+              || (bc.getX() == snek.getX() && bc.getY() == snek.getY())
+              || (bc2.getX() == snek2.getX() && bc2.getY() == snek2.getY())
+              || (bc2.getX() == snek.getX() && bc2.getY() == snek.getY())) {
+            this.gameActive = false;
+            this.hiScore = Math.max(score, hiScore);
+            break;
+          }
+        }
+      }
+    }
+    else {
+      for (BodyCell bc : snek.tail) {
+        if (bc.getX() == snek.getX() && bc.getY() == snek.getY()) {
+          this.gameActive = false;
+          this.hiScore = Math.max(score, hiScore);
+          break;
+        }
       }
     }
   }
@@ -176,6 +223,17 @@ public class SnakeWorld extends World{
         loFood.remove(i);
         loFood.add(new Food(this.snek));
         snek.addBodyCell(new BodyCell(f.getX(), f.getY()));
+      }
+    }
+
+    if (isTwoPlayer) {
+      for (int i = 0; i < loFood.size(); i++) {
+        Food f = loFood.get(i);
+        if (f.getX() == snek2.getX() && f.getY() == snek2.getY()) {
+          loFood.remove(i);
+          loFood.add(new Food(this.snek2));
+          snek2.addBodyCell(new BodyCell(f.getX(), f.getY()));
+        }
       }
     }
   }
@@ -205,6 +263,30 @@ public class SnakeWorld extends World{
       }
       else if (snek.getY() < 0) {
         snek.setY(HEIGHT - 1);
+      }
+    }
+
+    if (isTwoPlayer) {
+      if (WALLS_KILL) {
+        if (snek2.getX() > WIDTH - 1 || snek2.getX() < 0
+            || snek2.getY() > HEIGHT - 1 || snek2.getY() < 0) {
+          this.gameActive = false;
+          this.hiScore = Math.max(score, hiScore);
+        }
+      }
+      else {
+        if (snek2.getX() > WIDTH - 1) {
+          snek2.setX(0);
+        }
+        else if (snek2.getX() < 0) {
+          snek2.setX(WIDTH - 1);
+        }
+        else if (snek2.getY() > HEIGHT -1) {
+          snek2.setY(0);
+        }
+        else if (snek2.getY() < 0) {
+          snek2.setY(HEIGHT - 1);
+        }
       }
     }
   }
